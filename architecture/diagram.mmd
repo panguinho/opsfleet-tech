@@ -1,15 +1,24 @@
-flowchart TD
-  User[User]
-  ALB[Application Load Balancer]
-  EKS[EKS Cluster]
-  NodeGroupX86[x86 Node Group]
-  NodeGroupARM[Graviton Node Group]
-  Karpenter[Karpenter Autoscaler]
-  RDS[(RDS PostgreSQL)]
-  S3[S3 Bucket]
-  ECR[ECR Registry]
-  Secrets[Secrets Manager]
-  CI[CI/CD Pipeline]
+flowchart TB
+  subgraph Public Layer
+    User[User]
+    ALB[Application Load Balancer]
+  end
+  subgraph Kubernetes Layer
+    EKS[EKS Cluster]
+    NodeGroupX86[x86 Node Group (x86/amd64)]
+    NodeGroupARM[Graviton Node Group (arm64)]
+    Karpenter[Karpenter Autoscaler]
+  end
+  subgraph Data Layer
+    RDS[(RDS PostgreSQL)]
+    S3[S3 Bucket]
+    ECR[ECR Registry]
+    Secrets[Secrets Manager]
+  end
+  subgraph CI/CD & Observability
+    CI[CI/CD Pipeline]
+    Datadog[Datadog]
+  end
 
   User --> ALB
   ALB --> EKS
@@ -24,3 +33,6 @@ flowchart TD
   CI --> ECR
   CI --> EKS
   RDS -->|Backups| S3
+  EKS --> Datadog
+  NodeGroupX86 --> Datadog
+  NodeGroupARM --> Datadog
