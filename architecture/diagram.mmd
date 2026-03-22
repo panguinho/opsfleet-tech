@@ -1,33 +1,64 @@
 flowchart TB
-  subgraph PublicLayer
+  %% Ambientes
+  subgraph Accounts [AWS Accounts]
+    direction TB
+    Prod[Production]
+    Staging[Staging]
+    Shared[Shared Services]
+  end
+
+  %% Camada Pública
+  subgraph PublicLayer [Public Layer]
     User
-    ALB[ALB]
+    ALB[ALB (Load Balancer)]
   end
-  subgraph KubernetesLayer
-    EKS
-    NodeX86[x86 NodeGroup]
-    NodeARM[ARM NodeGroup]
-    Karpenter
+
+  %% VPC e Sub-redes
+  subgraph VPC [VPC]
+    direction TB
+    subgraph PublicSubnet [Public Subnet]
+      ALB
+    end
+    subgraph PrivateSubnet [Private Subnet]
+      EKS
+      NodeX86[x86 NodeGroup]
+      NodeARM[ARM NodeGroup]
+      Karpenter
+      subgraph Workloads
+        FE[Frontend (React SPA)]
+        BE[Backend (Flask API)]
+      end
+    end
+    subgraph IsolatedSubnet [Isolated Subnet]
+      RDS
+    end
   end
-  subgraph DataLayer
-    RDS
+
+  %% Camada de Dados
+  subgraph DataLayer [Data & Security]
     S3
     ECR
     Secrets
   end
-  subgraph CICD_Observability
+
+  %% CI/CD e Observabilidade
+  subgraph CICD_Observability [CI/CD & Observability]
     CI
     Datadog
   end
 
+  %% Fluxos
   User --> ALB
-  ALB --> EKS
+  ALB --> FE
+  FE --> BE
+  FE -.-> EKS
+  BE -.-> EKS
   EKS --> NodeX86
   EKS --> NodeARM
   NodeX86 -.-> Karpenter
   NodeARM -.-> Karpenter
-  EKS --> RDS
-  EKS --> S3
+  BE --> RDS
+  BE --> S3
   EKS --> ECR
   EKS --> Secrets
   CI --> ECR
@@ -36,3 +67,9 @@ flowchart TB
   EKS --> Datadog
   NodeX86 --> Datadog
   NodeARM --> Datadog
+  FE -.-> Datadog
+  BE -.-> Datadog
+  %% Ambientes controlam VPCs
+  Prod --> VPC
+  Staging --> VPC
+  Shared --> CICD_Observability
