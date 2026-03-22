@@ -64,7 +64,7 @@ This document proposes a robust, scalable, secure, and cost-effective AWS-based 
 
 ## 6. High-Level Architecture Diagram
 
-![High-Level Architecture](diagram.png)
+![High-Level Architecture](diagram.mmd)
 
 ---
 
