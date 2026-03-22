@@ -64,7 +64,75 @@ This document proposes a robust, scalable, secure, and cost-effective AWS-based 
 
 ## 6. High-Level Architecture Diagram
 
-![High-Level Architecture](diagram.mmd)
+```mermaid
+flowchart TB
+  %% Environments
+  subgraph Accounts
+    Prod
+    Staging
+    Shared
+  end
+
+  subgraph PublicLayer
+    User
+    ALB
+  end
+
+  subgraph VPC
+    subgraph PublicSubnet
+      ALB
+    end
+    subgraph PrivateSubnet
+      EKS
+      NodeX86
+      NodeARM
+      Karpenter
+      subgraph Workloads
+        FE
+        BE
+      end
+    end
+    subgraph IsolatedSubnet
+      RDS
+    end
+  end
+
+  subgraph DataLayer
+    S3
+    ECR
+    Secrets
+  end
+
+  subgraph CICD_Observability
+    CI
+    Datadog
+  end
+
+  User --> ALB
+  ALB --> FE
+  FE --> BE
+  FE -.-> EKS
+  BE -.-> EKS
+  EKS --> NodeX86
+  EKS --> NodeARM
+  NodeX86 -.-> Karpenter
+  NodeARM -.-> Karpenter
+  BE --> RDS
+  BE --> S3
+  EKS --> ECR
+  EKS --> Secrets
+  CI --> ECR
+  CI --> EKS
+  RDS -->|Backups| S3
+  EKS --> Datadog
+  NodeX86 --> Datadog
+  NodeARM --> Datadog
+  FE -.-> Datadog
+  BE -.-> Datadog
+  Prod --> VPC
+  Staging --> VPC
+  Shared --> CICD_Observability
+```
 
 ---
 
