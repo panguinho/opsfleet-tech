@@ -1,53 +1,46 @@
 flowchart TB
-  %% Ambientes
-  subgraph Accounts [AWS Accounts]
-    direction TB
-    Prod[Production]
-    Staging[Staging]
-    Shared[Shared Services]
+  %% Environments
+  subgraph Accounts
+    Prod
+    Staging
+    Shared
   end
 
-  %% Camada Pública
-  subgraph PublicLayer [Public Layer]
+  subgraph PublicLayer
     User
-    ALB[ALB (Load Balancer)]
+    ALB
   end
 
-  %% VPC e Sub-redes
-  subgraph VPC [VPC]
-    direction TB
-    subgraph PublicSubnet [Public Subnet]
+  subgraph VPC
+    subgraph PublicSubnet
       ALB
     end
-    subgraph PrivateSubnet [Private Subnet]
+    subgraph PrivateSubnet
       EKS
-      NodeX86[x86 NodeGroup]
-      NodeARM[ARM NodeGroup]
+      NodeX86
+      NodeARM
       Karpenter
       subgraph Workloads
-        FE[Frontend (React SPA)]
-        BE[Backend (Flask API)]
+        FE
+        BE
       end
     end
-    subgraph IsolatedSubnet [Isolated Subnet]
+    subgraph IsolatedSubnet
       RDS
     end
   end
 
-  %% Camada de Dados
-  subgraph DataLayer [Data & Security]
+  subgraph DataLayer
     S3
     ECR
     Secrets
   end
 
-  %% CI/CD e Observabilidade
-  subgraph CICD_Observability [CI/CD & Observability]
+  subgraph CICD_Observability
     CI
     Datadog
   end
 
-  %% Fluxos
   User --> ALB
   ALB --> FE
   FE --> BE
@@ -69,7 +62,6 @@ flowchart TB
   NodeARM --> Datadog
   FE -.-> Datadog
   BE -.-> Datadog
-  %% Ambientes controlam VPCs
   Prod --> VPC
   Staging --> VPC
   Shared --> CICD_Observability
