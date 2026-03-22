@@ -1,0 +1,26 @@
+flowchart TD
+  User[User]
+  ALB[Application Load Balancer]
+  EKS[EKS Cluster]
+  NodeGroupX86[x86 Node Group]
+  NodeGroupARM[Graviton Node Group]
+  Karpenter[Karpenter Autoscaler]
+  RDS[(RDS PostgreSQL)]
+  S3[S3 Bucket]
+  ECR[ECR Registry]
+  Secrets[Secrets Manager]
+  CI[CI/CD Pipeline]
+
+  User --> ALB
+  ALB --> EKS
+  EKS --> NodeGroupX86
+  EKS --> NodeGroupARM
+  NodeGroupX86 -.-> Karpenter
+  NodeGroupARM -.-> Karpenter
+  EKS --> RDS
+  EKS --> S3
+  EKS --> ECR
+  EKS --> Secrets
+  CI --> ECR
+  CI --> EKS
+  RDS -->|Backups| S3
