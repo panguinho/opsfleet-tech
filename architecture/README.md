@@ -41,8 +41,8 @@ This document proposes a robust, scalable, secure, and cost-effective AWS-based 
   - Resource requests/limits, taints/labels for workloads
 - **Containerization:**
   - Images built via CI/CD (GitHub Actions, CodeBuild)
-  - Images armazenadas no ECR
-  - Deploys automatizados via ArgoCD (preferência pessoal), mas Flux também é uma alternativa viável
+  - Images stored in ECR
+  - Automated deployments via ArgoCD (personal preference), but Flux is also a viable alternative
 
 ---
 
@@ -57,8 +57,8 @@ This document proposes a robust, scalable, secure, and cost-effective AWS-based 
 
 ---
 
-## 5. Observabilidade
-- Recomendado uso de Datadog para monitoramento, métricas e logs (alternativas: AWS CloudWatch, Prometheus/Grafana)
+## 5. Observability
+- Datadog is recommended for monitoring, metrics, and logs (alternatives: AWS CloudWatch, Prometheus/Grafana)
 
 ---
 
